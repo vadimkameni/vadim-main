@@ -1,0 +1,78 @@
+{% extends 'traur2/base.html' %}
+{% load static %}
+{% block content %}
+<div class="cart-container">
+    <h1>Корзина</h1>
+    <div id="cart-content" class="cart-content"></div> <br>
+    <button id="checkout-button">Оплатить</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var cartContent = document.getElementById('cart-content');
+        var checkoutButton = document.getElementById('checkout-button');
+
+        function addProductToCart(productName, productDescription, productPrice, productQuantity, productImage) {
+            var productHTML = '<div class="cart-item">';
+            productHTML += '<div class="product-info">';
+            productHTML += '<img src="' + productImage + '" alt="Product Image" class="product-img">';
+            productHTML += '<div class="product-details">';
+            productHTML += '<h3 class="product-title">' + productName + '</h3>';
+            productHTML += '<p class="product-desc">' + productDescription + '</p>';
+            productHTML += '<p class="product-price">' + productPrice + ' p</p>';
+            productHTML += '<p class="product-quantity">Количество: ' + productQuantity + '</p>';
+            productHTML += '</div>';
+            productHTML += '<button class="remove-button">Удалить</button>';
+            productHTML += '</div>';
+            productHTML += '</div>';
+
+            cartContent.innerHTML += productHTML;
+        }
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var productName = urlParams.getAll('name');
+        var productDescription = urlParams.getAll('description');
+        var productPrice = urlParams.getAll('price');
+        var productQuantity = urlParams.getAll('quantity');
+        var productImage = urlParams.getAll('image');
+
+        if (productName.length > 0) {
+            for (var i = 0; i < productName.length; i++) {
+                addProductToCart(productName[i], productDescription[i], productPrice[i], productQuantity[i], productImage[i]);
+            }
+        } else {
+            cartContent.innerHTML = '<p>Корзина пуста</p>';
+        }
+
+        // Добавляем обработчик события для кнопки "Оплатить"
+        checkoutButton.addEventListener('click', function() {
+            // Ваш код для обработки оплаты товаров
+            alert('Оплата товаров');
+        });
+
+        // Добавляем обработчик события для кнопки "Удалить"
+        var removeButtons = document.querySelectorAll('.remove-button');
+        removeButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                this.closest('.cart-item').remove();
+            });
+        });
+    });
+</script>
+
+
+<script>
+    window.onload = function() {
+        calculateTotal();
+    };
+
+    function calculateTotal() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var quantity = urlParams.get('quantity');
+        var price = urlParams.get('price');
+
+        var total = quantity * price;
+        document.querySelector('.total-price').innerText = 'Общая стоимость: ' + total + ' p';
+    }
+</script>
+{% endblock %}
